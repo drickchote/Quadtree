@@ -7,13 +7,15 @@
 
 #include "Ponto.h"
 #include "winGL.h"
+#include "arvore.h"
 		
 unsigned char* 	image = NULL;	// image file
 int 			iHeight, 
 				iWidth,
 				iChannels;
-
-bool 			desenha = false;
+tQuad * 		raiz;
+bool 			desenha = true;
+int 			nivelTeclado = 10;
 
 /// ***********************************************************************
 /// ** 
@@ -37,6 +39,29 @@ void negativaImage(unsigned char* img, int w, int h) {
 // ******                                   ******
 // ***********************************************
 
+void desenhaArvore(tQuad *r, int nivel){
+	
+	if(r == NULL) {
+		printf("saindo\n");	return;
+	}
+	printf("Estou no nivel %d, nivel pretendido: %d\n", r->nivel, nivel);
+	if(r->nivel == nivel){
+		desenhaQuadrante(r->pontoInicial,r->pontoFinal, r->cor);
+		return;
+	} else if(r->nivel < nivel && r->no1 != NULL && r->no2 !=NULL && r->no3 != NULL && r->no4 != NULL) {
+		printf("Entrando no no 1\n");
+		desenhaArvore(r->no1, nivel);
+		printf("Entrando no no 2\n");
+		desenhaArvore(r->no2, nivel);
+		printf("Entrando no no 3\n");
+		desenhaArvore(r->no3, nivel);
+		printf("Entrando no no 4\n");
+		desenhaArvore(r->no4, nivel);
+	} else{
+		return;
+	}
+}
+
 void desenhaVetorizacao() {
 
 	printf("Aqui eu vou desenhar o resultado da vetorizacao\n");
@@ -46,17 +71,10 @@ void desenhaVetorizacao() {
 	// fornecendo os pontos inicial e final do quadrante e a sua cor
 	// funcao do valor do pixel ou da regiao que voce quer desenhar
 	
-	tPonto p0, p1;
+	// tPonto p0, p1;
 	 
-	p0.x = p0.y = 0;
-
-	p1.x = iWidth/2;
-	p1.y = iHeight/2;	
-	desenhaQuadrante(p0, p1, 64);
-
-	p0.x = iWidth;
-	p0.y = iHeight;
-	desenhaQuadrante(p0, p1, 222);
+	 desenhaArvore(raiz, nivelTeclado);
+	// p0.x = p0.y = 0;
 
 }
 	
@@ -68,9 +86,14 @@ void vetorizaImagem() {
 	
 	printf("Aqui eu vou construir a estrutura base para a vetorizacao\n");
 	
-	// codifique aqui a sua rotina de montagem da estrutura de dados para suporte a
-	// vetorizacao 
-	
+	raiz = alocaNo(0,iWidth, 0, iHeight, 1);
+	// printf("Tamanho: x: %d, y: %d", iWidth, iHeight)
+	montaArvore(&raiz, image, iWidth, iHeight);
+	// if(verificaBorda(raiz, image, iWidth, iHeight)){
+	// 	printf("Tem borda");
+	// } else {
+	// 	printf("Tem borda não");
+	// }
 }
 	
 /// ***********************************************************************
@@ -91,7 +114,36 @@ void teclado(unsigned char key, int x, int y) {
 
 		case 'r'	: 	
 		case 'R'	: 	negativaImage(image, iHeight, iWidth);
-						break;			
+						break;		
+		case '0'	:   nivelTeclado = 0;
+		break;	
+		case '1'	:   nivelTeclado = 1;
+						break;	
+		case '2'	:   nivelTeclado = 2;
+						break;	
+		case '3'	:   nivelTeclado = 3;
+						break;	
+		case '4'	:   nivelTeclado = 4;
+						break;	
+		case '5'	:   nivelTeclado = 5;
+						break;	
+		case '6'	:   nivelTeclado = 6;
+						break;	
+		case '7'	:   nivelTeclado = 7;
+						break;	
+		case '8'	:   nivelTeclado = 8;
+						break;	
+		case '9'	:   nivelTeclado = 9;
+						break;
+
+		case 37		:
+		case 40     : if(nivelTeclado>0)
+						nivelTeclado--;	
+						break;
+		case 38		: 
+		case 39     : if(nivelTeclado>0)
+						nivelTeclado--;	
+						break;
 		}
 	glutPostRedisplay();
 }

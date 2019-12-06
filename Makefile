@@ -6,7 +6,7 @@
 
 all:	vetoriza
 
-vetoriza:  vetoriza.o winGL.o 
+vetoriza:  vetoriza.o winGL.o arvore.o
 	g++ -o $@ $^ -L./external/SOIL/lib -lglut -lGL -lGLU -lsoil
 
 clean:
